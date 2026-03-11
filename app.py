@@ -3,7 +3,7 @@ from flask import Flask, render_template, request, jsonify
 from scraper import search_craigslist
 from markets import MARKETS
 from nlp_query import process_query
-import json
+from db import load_searches as _load_searches, save_searches as _save_searches
 
 CATEGORIES = [
     ("sss", "All for sale"),
@@ -43,19 +43,6 @@ import uuid
 app = Flask(__name__)
 
 _MARKET_LABELS = {sub: label for sub, label in MARKETS}
-SEARCHES_FILE = os.path.join(os.path.dirname(__file__), "searches.json")
-
-
-def _load_searches():
-    if not os.path.exists(SEARCHES_FILE):
-        return {}
-    with open(SEARCHES_FILE) as f:
-        return json.load(f)
-
-
-def _save_searches(data):
-    with open(SEARCHES_FILE, "w") as f:
-        json.dump(data, f, indent=2)
 
 
 def _validate(query, markets, categories=None):

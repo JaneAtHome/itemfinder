@@ -2,7 +2,6 @@ flask>=3.0
 requests>=2.31
 gunicorn>=21.0
 spacy>=3.0,<4.0
-# spaCy model — install with: python -m spacy download en_core_web_sm
-# For deployment add the wheel URL directly, e.g.:
-# en-core-web-sm @ https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.7.1/en_core_web_sm-3.7.1-py3-none-any.whl
+psycopg2-binary>=2.9
+en-core-web-sm @ https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl
 
