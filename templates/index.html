@@ -3,124 +3,183 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Item Finder</title>
+  <title>Stolen Item Finder</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
 </head>
 <body>
   <main>
-    <h1>Item Finder</h1>
-    <p class="subtitle">Search Craigslist listings across local markets.</p>
+    <div class="app-header">
+      <h1>Stolen Item Finder</h1>
+      <p class="subtitle">Search Craigslist listings across local markets.</p>
+    </div>
 
-    <form id="search-form">
-      <div class="form-group">
-        <label for="query">What are you looking for?</label>
-        <input
-          type="text"
-          id="query"
-          name="query"
-          placeholder="e.g. vintage leather couch"
-          required
-          autocomplete="off"
-        />
-      </div>
+    <div class="app-layout">
 
-      <div class="form-group">
-        <div class="markets-header">
-          <label>Craigslist markets</label>
-          <span id="market-count" class="market-count">0 / 3 selected</span>
-        </div>
-        <div class="markets-list" id="markets-list">
-          {% for subdomain, label in markets %}
-          <label class="market-option">
-            <input type="checkbox" name="markets" value="{{ subdomain }}" />
-            {{ label }}
-          </label>
-          {% endfor %}
-        </div>
-      </div>
-
-      <button type="submit" id="submit-btn">Search</button>
-    </form>
-
-    <section id="saved-section">
-      <h2 class="saved-heading">Saved searches</h2>
-      <div id="saved-list">
-        <p id="saved-empty" class="saved-empty">No saved searches yet.</p>
-      </div>
-    </section>
-
-    <section id="results-section" hidden>
-      <div class="results-header">
-        <h2>Results</h2>
-        <div id="save-bar" hidden>
-          <input type="text" id="save-name" placeholder="Name this search to save it…" maxlength="80" />
-          <button id="save-btn" type="button">Save</button>
-        </div>
-      </div>
-
-      <div id="filter-sort-bar">
-        <div class="filter-row">
-          <div class="filter-group">
-            <label for="price-filter">Max price</label>
-            <select id="price-filter">
-              <option value="">Any price</option>
-              <option value="0">Free ($0)</option>
-              <option value="1">Up to $25</option>
-              <option value="2">Up to $50</option>
-              <option value="3">Up to $100</option>
-              <option value="4">Up to $250</option>
-              <option value="5">Up to $500</option>
-              <option value="6">Up to $1,000</option>
-              <option value="7">Up to $2,500</option>
-              <option value="8">Up to $5,000</option>
-              <option value="9">Up to $10,000</option>
-            </select>
+      <section class="col-search">
+        <div class="panel">
+          <div class="panel-header">
+            <h2>New Search</h2>
           </div>
-          <div class="filter-group">
-            <label for="age-filter">Max age</label>
-            <select id="age-filter">
-              <option value="">Any age</option>
-              <option value="0">Today</option>
-              <option value="1">Last 2 days</option>
-              <option value="2">Last 3 days</option>
-              <option value="3">Last week</option>
-              <option value="4">Last 2 weeks</option>
-              <option value="5">Last month</option>
-              <option value="6">Last 2 months</option>
-              <option value="7">Last 3 months</option>
-              <option value="8">Last 6 months</option>
-              <option value="9">Last year</option>
-            </select>
+          <div class="panel-body">
+        <form id="search-form">
+          <div class="form-group">
+            <label for="query">What are you looking for?</label>
+            <input
+              type="text"
+              id="query"
+              name="query"
+              placeholder="e.g. vintage leather couch"
+              required
+              autocomplete="off"
+            />
           </div>
-        </div>
-        <div id="market-filter-row" class="filter-row" hidden>
-          <div class="filter-group filter-group--full">
-            <span class="filter-label">Market</span>
-            <div id="market-filter-chips" class="filter-chips"></div>
+
+          <div class="form-group">
+            <div class="markets-header">
+              <label>Craigslist For Sale Categories</label>
+              <span id="category-count" class="market-count">1 / 5 selected</span>
+            </div>
+            <div id="category-chips" class="market-chips-row"></div>
+            <div class="market-search-wrap">
+              <input type="text" id="category-search" placeholder="Type a category name…" autocomplete="off" />
+              <ul id="category-autocomplete" class="market-autocomplete" hidden></ul>
+            </div>
+            <button type="button" id="category-list-toggle" class="market-list-toggle">Choose from a list</button>
+            <div class="markets-list" id="categories-list" hidden>
+              {% for subdomain, label in categories %}
+              <label class="market-option">
+                <input type="checkbox" name="categories" value="{{ subdomain }}"{% if subdomain == "sss" %} checked{% endif %} />
+                {{ label }}
+              </label>
+              {% endfor %}
+            </div>
           </div>
+
+          <div class="form-group">
+            <div class="markets-header">
+              <label>Craigslist markets</label>
+              <span id="market-count" class="market-count">0 / 6 selected</span>
+            </div>
+            <div id="market-chips" class="market-chips-row"></div>
+            <div class="market-search-wrap">
+              <input type="text" id="market-search" placeholder="Type a city or market name…" autocomplete="off" />
+              <ul id="market-autocomplete" class="market-autocomplete" hidden></ul>
+            </div>
+            <button type="button" id="market-list-toggle" class="market-list-toggle">Choose from a list</button>
+            <div class="markets-list" id="markets-list" hidden>
+              {% for subdomain, label in markets %}
+              <label class="market-option">
+                <input type="checkbox" name="markets" value="{{ subdomain }}" />
+                {{ label }}
+              </label>
+              {% endfor %}
+            </div>
+          </div>
+
+          <button type="submit" id="submit-btn">Search</button>
+        </form>
+          </div><!-- /.panel-body -->
+        </div><!-- /.panel -->
+
+        <p id="delay-msg" class="info" hidden></p>
+        <p id="interpretation-msg" class="interpretation" hidden></p>
+        <p id="error-msg" class="error" hidden></p>
+
+        <section id="results-section" class="panel" hidden>
+          <div class="panel-header">
+            <h2>Results</h2>
+            <div id="save-bar" hidden>
+              <input type="text" id="save-name" placeholder="Name this search to save it…" maxlength="80" />
+              <button id="save-btn" type="button">Save</button>
+            </div>
+          </div>
+
+          <div class="panel-body">
+            <div id="filter-sort-bar">
+            <button type="button" id="filter-toggle" class="filter-toggle">
+              <span class="filter-toggle-arrow">▶</span> Filters
+            </button>
+            <div id="filter-body" hidden>
+            <div class="filter-row">
+              <div class="filter-group">
+                <label for="price-filter">Max price</label>
+                <select id="price-filter">
+                  <option value="">Any price</option>
+                  <option value="0">Free ($0)</option>
+                  <option value="1">Up to $25</option>
+                  <option value="2">Up to $50</option>
+                  <option value="3">Up to $100</option>
+                  <option value="4">Up to $250</option>
+                  <option value="5">Up to $500</option>
+                  <option value="6">Up to $1,000</option>
+                  <option value="7">Up to $2,500</option>
+                  <option value="8">Up to $5,000</option>
+                  <option value="9">Up to $10,000</option>
+                </select>
+              </div>
+              <div class="filter-group">
+                <label for="age-filter">Max age</label>
+                <select id="age-filter">
+                  <option value="">Any age</option>
+                  <option value="0">Today</option>
+                  <option value="1">Last 2 days</option>
+                  <option value="2">Last 3 days</option>
+                  <option value="3">Last week</option>
+                  <option value="4">Last 2 weeks</option>
+                  <option value="5">Last month</option>
+                  <option value="6">Last 2 months</option>
+                  <option value="7">Last 3 months</option>
+                  <option value="8">Last 6 months</option>
+                  <option value="9">Last year</option>
+                </select>
+              </div>
+            </div>
+            <div id="market-filter-row" class="filter-row" hidden>
+              <div class="filter-group filter-group--full">
+                <span class="filter-label">Market</span>
+                <div id="market-filter-chips" class="filter-chips"></div>
+              </div>
+            </div>
+            </div><!-- /#filter-body -->
+            </div><!-- /#filter-sort-bar -->
+
+          <div id="seen-toggle-bar" hidden>
+            <button id="seen-toggle-btn" type="button"></button>
+          </div>
+          <p id="result-count"></p>
+          <div class="table-wrapper">
+            <table id="results-table">
+              <thead>
+                <tr>
+                  <th class="col-thumb"></th>
+                  <th data-col="title">Name <span class="sort-arrow"></span></th>
+                  <th data-col="price">Price <span class="sort-arrow"></span></th>
+                  <th data-col="date">Date Posted <span class="sort-arrow"></span></th>
+                  <th data-col="location">Location <span class="sort-arrow"></span></th>
+                  <th data-col="market">Market <span class="sort-arrow"></span></th>
+                </tr>
+              </thead>
+              <tbody id="results-body"></tbody>
+            </table>
+          </div>
+
+          <div id="pagination" class="pagination" hidden>
+            <button id="prev-page" type="button" class="page-btn">← Previous</button>
+            <span id="page-info" class="page-info"></span>
+            <button id="next-page" type="button" class="page-btn">Next →</button>
+          </div>
+          </div><!-- /.panel-body -->
+        </section>
+      </section>
+
+      <aside class="col-saved">
+        <h2 class="col-heading">Saved Searches</h2>
+        <div id="saved-list">
+          <p id="saved-empty" class="saved-empty">No saved searches yet.</p>
         </div>
-      </div>
+      </aside>
 
-      <div id="seen-toggle-bar" hidden>
-        <button id="seen-toggle-btn" type="button"></button>
-      </div>
-      <p id="result-count"></p>
-      <div class="table-wrapper">
-        <table id="results-table">
-          <thead>
-            <tr>
-              <th data-col="title">Name <span class="sort-arrow"></span></th>
-              <th data-col="price">Price <span class="sort-arrow"></span></th>
-              <th data-col="date">Date Posted <span class="sort-arrow"></span></th>
-              <th data-col="market">Market <span class="sort-arrow"></span></th>
-            </tr>
-          </thead>
-          <tbody id="results-body"></tbody>
-        </table>
-      </div>
-    </section>
-
-    <p id="error-msg" class="error" hidden></p>
+    </div>
   </main>
 
   <script src="{{ url_for('static', filename='js/main.js') }}"></script>

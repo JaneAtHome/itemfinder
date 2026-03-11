@@ -1,3 +1,4 @@
+import re
 import requests
 
 HEADERS = {
@@ -9,12 +10,36 @@ HEADERS = {
 }
 
 
-def search_craigslist(query: str, market: str) -> list[dict]:
+def _location_from_url(posting_url: str, title: str) -> str:
+    """
+    Extract city/town from the Craigslist URL slug.
+    Slug format: {city-slug}-{title-slug}/{id}.html
+    Strategy: walk slug words; stop when we hit a word from the title (>= 4 chars).
+    Cap at 2 words to avoid false positives.
+    """
+    try:
+        slug = posting_url.rstrip("/").split("/")[-2]
+        slug_words = slug.split("-")
+        title_words = {
+            w for w in re.sub(r"[^a-z0-9 ]", "", title.lower()).split()
+            if len(w) >= 4
+        }
+        city_words = []
+        for word in slug_words[:3]:
+            if len(city_words) == 2 or word in title_words:
+                break
+            city_words.append(word)
+        return " ".join(w.capitalize() for w in city_words) if city_words else ""
+    except Exception:
+        return ""
+
+
+def search_craigslist(query: str, market: str, category: str = "sss") -> list[dict]:
     """
     Search a Craigslist market using the jsonsearch API.
     Returns a list of dicts with 'title', 'price', 'url', and 'date'.
     """
-    url = f"https://{market}.craigslist.org/jsonsearch/sss"
+    url = f"https://{market}.craigslist.org/jsonsearch/{category}"
     params = {"query": query}
 
     try:
@@ -41,12 +66,16 @@ def search_craigslist(query: str, market: str) -> list[dict]:
         price = f"${price_raw}" if isinstance(price_raw, (int, float)) else (price_raw or "N/A")
         date_ts = item.get("PostedDate", None)
 
+        location = _location_from_url(url, title)
+
         results.append({
             "title": title,
             "price": price,
             "price_num": price_num,
             "url": url,
             "date_ts": date_ts,
+            "thumb": item.get("ImageThumb", ""),
+            "location": location,
         })
 
     return results
